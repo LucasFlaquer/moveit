@@ -8,6 +8,8 @@ interface ChallgenesProps {
   level: number,
   currentExperience: number
   challengesCompleted: number
+  username: string
+  avatarUrl: string
 }
 
 interface ChallengeI {
@@ -27,6 +29,7 @@ interface challenngesContextData {
   startNewChallenge: () => void
   completeChallenge: () => void
   closeLevelUpModal: () => void
+  getUserData: () => void
 }
 export const challenngesContext = createContext({} as challenngesContextData)
 
@@ -36,6 +39,9 @@ export function ChallenngesProvider({ children, ...rest }: ChallgenesProps) {
   const [challengesCompleted, setChallengesCompleted] = useState(rest.challengesCompleted ?? 0)
   const [activeChallenge, setActiveChallenge] = useState(null)
   const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
+
   const experienceToNextLevel = Math.pow((level + 1) * 4, 2)
 
   useEffect(() => {
@@ -46,8 +52,9 @@ export function ChallenngesProvider({ children, ...rest }: ChallgenesProps) {
     Cookies.set('level', String(level))
     Cookies.set('currentExperience', String(currentExperience))
     Cookies.set('challengesCompleted', String(challengesCompleted))
-
-  }, [level, currentExperience, challengesCompleted])
+    Cookies.set('username', name)
+    Cookies.set('avatarUrl', avatarUrl)
+  }, [level, currentExperience, challengesCompleted, name, avatarUrl])
 
   function startNewChallenge() {
     console.log('new Challenge')
@@ -94,6 +101,12 @@ export function ChallenngesProvider({ children, ...rest }: ChallgenesProps) {
     setIsLevelUpModalOpen(false)
   }
 
+  function getUserData() {
+    console.log(name, avatarUrl)
+    setName(name)
+    setAvatarUrl(avatarUrl)
+  }
+
   return (
     <challenngesContext.Provider value={{
       level,
@@ -101,6 +114,7 @@ export function ChallenngesProvider({ children, ...rest }: ChallgenesProps) {
       currentExperience,
       challengesCompleted,
       activeChallenge,
+      getUserData,
       resetChallenge,
       levelUp,
       startNewChallenge,
